@@ -5,6 +5,9 @@ import axios from "axios";
 import { Input } from "../components";
 import { useRouter } from "next/navigation";
 
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
+
 export default function Auth() {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
@@ -95,6 +98,42 @@ export default function Auth() {
             >
               {variant === "login" ? "Entrar" : "Cadastrar"}
             </button>
+            <div className="flex flex-row items-center gap-4 mt-8 justify-center">
+              <div
+                onClick={() => signIn("google", { callbackUrl: "/" })}
+                className="
+                w-10
+                h-10
+                bg-white
+                rounded-full
+                flex
+                items-center
+                justify-center
+                cursor-pointer
+                hover:opacity-80
+                transition
+              "
+              >
+                <FcGoogle size={30} />
+              </div>
+              <div
+                onClick={() => signIn("github", { callbackUrl: "/" })}
+                className="
+                w-10
+                h-10
+                bg-white
+                rounded-full
+                flex
+                items-center
+                justify-center
+                cursor-pointer
+                hover:opacity-80
+                transition
+              "
+              >
+                <FaGithub size={30} />
+              </div>
+            </div>
             <p className="text-neutral-500 mt-12">
               {variant === "login" ? "Novo por aqui?" : "Já tem uma conta?"}
 

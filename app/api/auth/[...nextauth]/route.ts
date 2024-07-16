@@ -1,13 +1,9 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
-
 import prismadb from "@/lib/prismadb";
-
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
-
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 const handler = NextAuth({
   providers: [
@@ -22,6 +18,7 @@ const handler = NextAuth({
     Credentials({
       id: "credentials",
       name: "Credentials",
+
       credentials: {
         email: {
           label: "Email",
@@ -34,7 +31,11 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email and password is required");
+          throw {
+            error: true,
+            message: "E-mail e senha são obrigatórios",
+            status: 401,
+          };
         }
 
         const user = await prismadb.user.findUnique({
@@ -44,7 +45,11 @@ const handler = NextAuth({
         });
 
         if (!user || !user.hashedPassword) {
-          throw new Error("Email does not exist");
+          throw {
+            error: true,
+            message: "Usuário não encontrado",
+            status: 401,
+          };
         }
 
         const isCorrectPassword = await compare(
@@ -53,7 +58,11 @@ const handler = NextAuth({
         );
 
         if (!isCorrectPassword) {
-          throw new Error("Incorrect password");
+          throw {
+            error: true,
+            message: "Senha incorreta",
+            status: 401,
+          };
         }
 
         return user;
@@ -64,7 +73,6 @@ const handler = NextAuth({
     signIn: "/auth",
   },
   debug: process.env.NODE_ENV === "development",
-  adapter: PrismaAdapter(prismadb),
   session: {
     strategy: "jwt",
   },

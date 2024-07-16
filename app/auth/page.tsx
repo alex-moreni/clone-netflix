@@ -1,14 +1,16 @@
 "use client";
-import { useCallback, useState } from "react";
-import { signIn } from "next-auth/react";
+import { useCallback, useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import axios from "axios";
-import { Input } from "../components";
+import { Input } from "../components/Input";
 import { useRouter } from "next/navigation";
 
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 
 export default function Auth() {
+  const { data: session } = useSession();
+
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
@@ -24,12 +26,25 @@ export default function Auth() {
 
   const login = useCallback(async () => {
     try {
-      await signIn("credentials", {
+      const result = await signIn("credentials", {
         email,
         password,
         redirect: false,
         callbackUrl: "/",
       });
+
+      if (!result) {
+        console.log(
+          "Houve um erro inesperado ao realizar o login, tente novamente mais tarde."
+        );
+
+        return;
+      }
+
+      if (result.error) {
+        console.log(result.error);
+        return;
+      }
 
       router.push("/");
     } catch (err) {
@@ -50,6 +65,12 @@ export default function Auth() {
       console.error(err);
     }
   }, [email, name, password, login]);
+
+  useEffect(() => {
+    if (session) {
+      router.push("/");
+    }
+  }, [session]);
 
   return (
     <div className="relative h-full w-full bg-[url('/images/hero.jpg')] bg-no-repeat bg-center bg-fixed bg-cover">

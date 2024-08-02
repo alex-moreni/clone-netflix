@@ -29,8 +29,7 @@ export default function Auth() {
       const result = await signIn("credentials", {
         email,
         password,
-        redirect: false,
-        callbackUrl: "/",
+        callbackUrl: "/profiles",
       });
 
       if (!result) {
@@ -45,8 +44,6 @@ export default function Auth() {
         console.log(result.error);
         return;
       }
-
-      router.push("/");
     } catch (err) {
       console.error(err);
     }
@@ -121,7 +118,7 @@ export default function Auth() {
             </button>
             <div className="flex flex-row items-center gap-4 mt-8 justify-center">
               <div
-                onClick={() => signIn("google", { callbackUrl: "/" })}
+                onClick={() => signIn("google", { callbackUrl: "/profiles" })}
                 className="
                 w-10
                 h-10
@@ -138,7 +135,7 @@ export default function Auth() {
                 <FcGoogle size={30} />
               </div>
               <div
-                onClick={() => signIn("github", { callbackUrl: "/" })}
+                onClick={() => signIn("github", { callbackUrl: "/profiles" })}
                 className="
                 w-10
                 h-10
